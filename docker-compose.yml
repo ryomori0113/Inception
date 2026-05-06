@@ -1,4 +1,40 @@
 services:
+
+  nginx:
+    build: requirements/nginx
+    container_name: nginx
+    ports:
+      - "443:443"
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress_vol:/var/www/wordpress
+    restart: always
+
+  wordpress:
+    build: requirements/wordpress
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_EMAIL: ${MYSQL_EMAIL}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DOMAIN_NAME: ${DOMAIN_NAME}
+      WP_ADMIN_USER: ${WP_ADMIN_USER}
+      WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      # FTP_USER: ${FTP_USER}
+      # FTP_PASSWORD: ${FTP_PASSWORD} :bonus:
+    volumes:
+      - wordpress_vol:/var/www/wordpress
+    networks:
+      - inception
+    restart: always
+
   mariadb:
       build: requirements/mariadb
       container_name: mariadb
@@ -23,10 +59,10 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${WP_DATA_PATH}
+      device: ${PWD}/${WP_DATA_PATH}
   mariadb_vol:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${DB_DATA_PATH}
+      device: ${PWD}/${DB_DATA_PATH}
