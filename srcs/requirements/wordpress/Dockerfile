@@ -1,4 +1,5 @@
-FROM alpine:latest
+FROM alpine:3.19
+#latestからの変更
 
 RUN apk update && apk add --no-cache \
     php83 php83-fpm php83-mysqli php83-json php83-curl \
